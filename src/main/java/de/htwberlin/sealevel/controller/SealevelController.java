@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
 
 /**
  * Rest-Controller, which is responsible for all request to /sealevel
@@ -38,15 +40,14 @@ public class SealevelController {
      */
     @GetMapping("/sealevel")
     public Sealevel getSealevel(@RequestParam("date") String d) {
-
-        Sealevel s = new Sealevel();
         try {
-            s.setDate(new SimpleDateFormat("dd/MM/yyyy").parse(d));
+            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(d);
+            Optional<Sealevel> sealevelDataEntry = sealevelRepository.findByDate(date);
+            return sealevelDataEntry.orElseThrow();
         } catch (ParseException e) {
             LOG.warn("Could not parse date parameter!");
+            return null;
         }
-        s.setSealevel(242.242424f);
-        return s;
     }
 
 }
