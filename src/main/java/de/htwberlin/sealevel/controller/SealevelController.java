@@ -55,7 +55,7 @@ public class SealevelController {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             Date startOfYear = formatter.parse(year + "-01-01");
-            Date endOfYear = formatter.parse(year + "-12-30");
+            Date endOfYear = formatter.parse(year + "-12-31");
             double averageSealevel = sealevelRepository.findByYear(startOfYear, endOfYear);
             Sealevel s = new Sealevel();
             s.setSealevel((float) averageSealevel);
