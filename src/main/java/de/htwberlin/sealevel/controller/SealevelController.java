@@ -50,4 +50,20 @@ public class SealevelController {
         }
     }
 
+    @GetMapping("/sealevel/average")
+    public Sealevel getAverageSealevelByYear(@RequestParam("year") String year) {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date startOfYear = formatter.parse(year + "-01-01");
+            Date endOfYear = formatter.parse(year + "-12-30");
+            double averageSealevel = sealevelRepository.findByYear(startOfYear, endOfYear);
+            Sealevel s = new Sealevel();
+            s.setSealevel((float) averageSealevel);
+            return s;
+        } catch (Exception e) {
+            LOG.warn("Could not parse date parameter!");
+            return null;
+        }
+    }
+
 }

@@ -1,5 +1,8 @@
 package de.htwberlin.sealevel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +14,7 @@ import java.util.Date;
  * @Entity Annotation for database connection
  */
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Sealevel {
 
     /**
@@ -22,8 +26,13 @@ public class Sealevel {
     private Long id;
 
     private float sealevel;
+
+    @JsonIgnore
     private double longitude;
+
+    @JsonIgnore
     private double latitude;
+
     private Date date;
 
     public Long getId() {
