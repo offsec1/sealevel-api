@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Sealevel repository or DAO, which extends the JPARepository
+ *
  * @Repository telling SpringBoot that this is indeed a Repository
  */
 @Repository
@@ -18,4 +20,21 @@ public interface SealevelRepository extends JpaRepository<Sealevel, Long> {
 
     @Query("SELECT AVG(sealevel) FROM Sealevel WHERE date BETWEEN ?1 AND ?2")
     double findByYear(Date yearStart, Date yearEnd);
+
+    @Query("SELECT MIN(sealevel) FROM Sealevel")
+    double findMinSealevel();
+
+    @Query("SELECT MAX(sealevel) FROM Sealevel")
+    double findMaxSealevel();
+
+    @Query(value = "SELECT AVG(sealevel) as avgSealevel, extract(year from date) as dateYear FROM sealevel\n" +
+            "GROUP BY dateYear\n" +
+            "ORDER BY dateYear asc", nativeQuery = true)
+    List<AvgSealevel> findAllAverageSealevels();
+
+    interface AvgSealevel {
+        Double getAvgSealevel();
+        Integer getDateYear();
+    }
+
 }

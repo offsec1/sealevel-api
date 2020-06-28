@@ -1,4 +1,5 @@
 package de.htwberlin.sealevel.controller;
+
 import de.htwberlin.sealevel.model.Sealevel;
 import de.htwberlin.sealevel.repository.SealevelRepository;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,6 +53,11 @@ public class SealevelController {
         }
     }
 
+    /**
+     * returns the average sealevel of the given year
+     * @param year to compute the average sealevel of
+     * @return Sealevel with no other information then the avg sealevel
+     */
     @GetMapping("/sealevel/average")
     public Sealevel getAverageSealevelByYear(@RequestParam("year") String year) {
         try {
@@ -66,4 +74,46 @@ public class SealevelController {
         }
     }
 
+    /**
+     * Get average sealevel data for given year in a format unity can work with
+     * @param year  to compute the average sealevel of
+     * @return double between 0 and 1
+     */
+    @GetMapping("/sealevel/average/unity")
+    public double getAverageSealevelByYearForUnity(@RequestParam("year") String year) {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date startOfYear = formatter.parse(year + "-01-01");
+            Date endOfYear = formatter.parse(year + "-12-31");
+
+            double averageSealevel = sealevelRepository.findByYear(startOfYear, endOfYear);
+
+            return normalizeSealevelForUnity(averageSealevel); // normalize value
+        } catch (Exception e) {
+            LOG.warn("Could not return sealevel data in unity format: ", e);
+            return -1;
+        }
+    }
+
+    /**
+     * Get all available average sealevel data in a format unity can work with
+     * @return hashmap with all the years available and the corresponding sealevel in unity format
+     */
+    @GetMapping("/sealevel/average/unity/all")
+    public HashMap<Integer, Double> getAverageSealevelAllYearsForUnity() {
+        List<SealevelRepository.AvgSealevel> allAverageSealevels = sealevelRepository.findAllAverageSealevels();
+        HashMap<Integer, Double> unityValues = new HashMap<>();
+
+        for (SealevelRepository.AvgSealevel s: allAverageSealevels) {
+            unityValues.put(s.getDateYear(), normalizeSealevelForUnity(s.getAvgSealevel()));
+        }
+        return unityValues;
+    }
+
+    private double normalizeSealevelForUnity(double currentSealevel) {
+        double minSealevel = sealevelRepository.findMinSealevel();
+        double maxSealevel = sealevelRepository.findMaxSealevel();
+
+        return (currentSealevel - minSealevel) / (maxSealevel - minSealevel);
+    }
 }
