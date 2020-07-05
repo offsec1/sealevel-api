@@ -110,6 +110,11 @@ public class SealevelController {
         return unityValues;
     }
 
+    /**
+     * Normalize the sealevel data to a value between 0 and 1 to make it easier to use in unity
+     * @param currentSealevel sealevel
+     * @return double between 0 and 1
+     */
     private double normalizeSealevelForUnity(double currentSealevel) {
         double minSealevel = sealevelRepository.findMinSealevel();
         double maxSealevel = sealevelRepository.findMaxSealevel();

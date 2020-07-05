@@ -27,6 +27,10 @@ public interface SealevelRepository extends JpaRepository<Sealevel, Long> {
     @Query("SELECT MAX(sealevel) FROM Sealevel")
     double findMaxSealevel();
 
+    /**
+     * Get the average sealevel per year for all years found in the database
+     * @return list of average sealevels
+     */
     @Query(value = "SELECT AVG(sealevel) as avgSealevel, extract(year from date) as dateYear FROM sealevel\n" +
             "GROUP BY dateYear\n" +
             "ORDER BY dateYear asc", nativeQuery = true)
