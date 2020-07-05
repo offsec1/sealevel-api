@@ -36,6 +36,9 @@ public interface SealevelRepository extends JpaRepository<Sealevel, Long> {
             "ORDER BY dateYear asc", nativeQuery = true)
     List<AvgSealevel> findAllAverageSealevels();
 
+    /**
+     * Interface class for average sealevels
+     */
     interface AvgSealevel {
         Double getAvgSealevel();
         Integer getDateYear();
