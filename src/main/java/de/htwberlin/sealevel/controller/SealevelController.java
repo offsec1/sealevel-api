@@ -5,9 +5,11 @@ import de.htwberlin.sealevel.repository.SealevelRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,7 +48,11 @@ public class SealevelController {
         try {
             Date date = new SimpleDateFormat("dd/MM/yyyy").parse(d);
             Optional<Sealevel> sealevelDataEntry = sealevelRepository.findByDate(date);
-            return sealevelDataEntry.orElseThrow();
+            if (sealevelDataEntry.isPresent())
+                return sealevelDataEntry.get();
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "entity not found"
+            );
         } catch (ParseException e) {
             LOG.warn("Could not parse date parameter!");
             return null;
